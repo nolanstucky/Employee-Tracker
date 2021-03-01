@@ -17,7 +17,7 @@ connection.connect(function(err){
     init();
 })
 
-
+//function that is called upon once npm start asks the user what they want to do 
 function init() {
     inquirer.prompt([
         {
@@ -37,6 +37,7 @@ function init() {
         }
     ])
     .then(answers =>{
+        //switch cases that handles the functions depending on what the user wants to do
         switch (answers.choice) {
             case "View All Employees":
                 viewAllEmployees();
@@ -62,7 +63,7 @@ function init() {
         }
     })
 }
-
+//function that shows all employees from database
 function viewAllEmployees(){
     connection.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, employee.manager_id FROM employee INNER JOIN role on employee.role_id = role.id INNER JOIN department on role.department_id = department.id;",
     function(err, res) {
@@ -71,7 +72,7 @@ function viewAllEmployees(){
         init();
     })
 }
-
+//function that shows all departments from databas
 function viewDepartments(){
     connection.query("SELECT * FROM department;",
     function(err, res) {
@@ -89,7 +90,7 @@ function viewRoles(){
         init();
     })
 }
-
+//function that adds an employee based off of user input to database
 function addEmployee(){
     inquirer.prompt([
         {
@@ -116,6 +117,7 @@ function addEmployee(){
         },
     ])
     .then(answers=>{
+        //grabs the index of roles list and employee list to be able to track id 
         let roleId = showRoles().indexOf(answers.roles) + 1
         let managerId = showEmployees().indexOf(answers.managers) 
         if(managerId===0){
@@ -134,6 +136,7 @@ function addEmployee(){
             })
     })
 }
+//function that fills an array with all the roles in the database to use id
 var roles = []
 function showRoles(){
     connection.query("SELECT * FROM role;",
@@ -145,6 +148,7 @@ function showRoles(){
     })
     return roles;
 };
+//function that fills an array with all the employees in the database to use id
 var names = []
 function showEmployees(){
     connection.query("SELECT * FROM employee;",
@@ -159,6 +163,7 @@ function showEmployees(){
     })
     return names;
 };
+//function that fills an array with all the employees in the database to use id
 var namesTwo = []
 function showEmployeesTwo(){
     connection.query("SELECT * FROM employee;",
@@ -172,7 +177,7 @@ function showEmployeesTwo(){
     })
     return namesTwo;
 };
-
+//function that fills an array with all the departments in the database to use id
 var departments = []
 function showDepartments(){
     connection.query("SELECT * FROM department;",
@@ -187,7 +192,7 @@ function showDepartments(){
     })
     return departments;
 };
-
+//adds a department based off of the name and id from user input
 function addDepartment(){
     inquirer.prompt([
         {
@@ -214,7 +219,7 @@ function addDepartment(){
             })
     })
 }
-
+//function that adds a role to the database based off of user input
 function addRole(){
     inquirer.prompt([
         {
@@ -248,7 +253,7 @@ function addRole(){
             })
     })
 }
-
+//updates the employee role based off of what the user picks for employee and role array
 function updateEmployeeRole(){
     inquirer.prompt([
         {
