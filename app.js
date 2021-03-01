@@ -31,7 +31,7 @@ function init() {
                 "Add Employee",
                 "Update Employee Role",
                 "Add Department",
-                "Add Roles"
+                "Add Role"
             ]
 
         }
@@ -51,13 +51,13 @@ function init() {
                 addEmployee();
             break;
             case "Update Employee Role":
-                addRole();
+                updateEmployeeRole();
             break;
             case "Add Department":
                 addDepartment();
             break;
-            case "Update Employee Role":
-                updateEmployeeRole();
+            case "Add Role":
+                addRole();
             break;
         }
     })
@@ -125,8 +125,8 @@ function addEmployee(){
             {
                 first_name: answers.firstName,
                 last_name: answers.lastName,
-                role_id: 3,
-                manager_id: null
+                role_id: roleId,
+                manager_id: managerId
 
             }, function(err){
                 if (err) throw err;
@@ -150,7 +150,7 @@ function showEmployees(){
     connection.query("SELECT * FROM employee;",
     function(err, res) {
         if (err) throw err;
-        names.push("No manager");
+        names.push("None");
         for (let i = 0; i < res.length; i++) {
 
             names.push(res[i].first_name +" "+ res[i].last_name)
@@ -158,6 +158,34 @@ function showEmployees(){
 
     })
     return names;
+};
+var namesTwo = []
+function showEmployeesTwo(){
+    connection.query("SELECT * FROM employee;",
+    function(err, res) {
+        if (err) throw err;
+        for (let i = 0; i < res.length; i++) {
+
+            namesTwo.push(res[i].first_name +" "+ res[i].last_name)
+        }
+
+    })
+    return namesTwo;
+};
+
+var departments = []
+function showDepartments(){
+    connection.query("SELECT * FROM department;",
+    function(err, res) {
+        if (err) throw err;
+
+        for (let i = 0; i < res.length; i++) {
+
+            departments.push(res[i].name)
+        }
+
+    })
+    return departments;
 };
 
 function addDepartment(){
@@ -172,6 +200,7 @@ function addDepartment(){
             name: "departmentId",
             message: "Please enter the department's id"
         },
+        
     ])
     .then(answers=>{
         connection.query("INSERT INTO department SET ?",
@@ -185,3 +214,71 @@ function addDepartment(){
             })
     })
 }
+
+function addRole(){
+    inquirer.prompt([
+        {
+            type: "input",
+            name: "roleTitle",
+            message: "Please enter the role's title"
+        },
+        {
+            type: "input",
+            name: "roleSalary",
+            message: "Please enter the role's salary"
+        },
+        {
+            type: "list",
+            name: "roleDepartmentId",
+            message: "Please enter the department's id for the role",
+            choices: showDepartments()
+        },
+    ])
+    .then(answers=>{
+        let departmentId = showDepartments().indexOf(answers.roleDepartmentId) 
+        connection.query("INSERT INTO role SET ?",
+            {
+                title: answers.roleTitle,
+                salary: answers.roleSalary,
+                department_id: departmentId
+
+            }, function(err){
+                if (err) throw err;
+                init();
+            })
+    })
+}
+
+function updateEmployeeRole(){
+    inquirer.prompt([
+        {
+            type: "input",
+            name: "yourDay",
+            message: "How are you doing today?"
+        },
+        {
+            type: "list",
+            name: "employee",
+            message: "Please choose the employee",
+            choices: showEmployeesTwo()
+        },
+        {
+            type: "list",
+            name: "roles",
+            message: "Please choose their new role",
+            choices: showRoles()
+        },
+    ])
+    .then(answers=>{
+        let roleId = showRoles().indexOf(answers.roles) + 1
+        let employeeId = showEmployeesTwo().indexOf(answers.employee) + 1
+        let sql = "UPDATE employee SET role_id = ? WHERE id = ?";
+        let data = [roleId, employeeId]
+        connection.query(sql, data, 
+            function(err){
+                if (err) throw err;
+                init();
+            })
+    })
+}
+
