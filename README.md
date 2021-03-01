@@ -10,7 +10,7 @@ This is a command line application using node.js and inquier connected to a mysq
 * [Questions](#questions)
 
 ## Demonstration:
-<img src="" alt = "demonstration" style="width: 80%;">
+![demonstration](./demonstration-employee-tracker.gif)
 
 ## Installation
 npm install
